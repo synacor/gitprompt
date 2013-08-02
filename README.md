@@ -1,4 +1,4 @@
-`gitprompt` is an efficient, highly configurable prompt for Git status information in shells that use PS1 (like Bash).
+`gitprompt` is an efficient, highly configurable prompt for Git status information in command-line shells.
 
 To use it, attach the associated script, `gitprompt.pl`, to your shell's mechanism for running a command before the prompt is displayed (in `bash`, this is `PROMPT_COMMAND`), storing its result in `PS1` (or whatever your shell's prompt variable).  For example, in `bash`, you could put this in your `.bashrc` or `.bash_profile`:
 

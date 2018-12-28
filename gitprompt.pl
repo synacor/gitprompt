@@ -26,7 +26,7 @@ use IPC::Open3;
 use Time::HiRes qw(time);
 
 ### prechecks ###
-my $ps0 = $ENV{PS0};
+my $ps0 = $ENV{GIT_PROMPT} ? $ENV{GIT_PROMPT} : $ENV{PS0};
 unless ($ps0) {
   print "!define PS0!> ";
   exit 1;

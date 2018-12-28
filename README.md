@@ -12,12 +12,14 @@ export PROMPT_COMMAND='export PS1=$(gitprompt.pl)'
 
 (The above assumes that `gitprompt.pl` is in your `PATH`; if not, specify its path explicitly.)
 
-You also need to define the template which will be filled in with your Git status information.  This template goes in the `PS0` environment variable:
+You also need to define the template which will be filled in with your Git status information.  This template goes in the `GIT_PROMPT` environment variable:
 
 ```
 # ugly!  start with a nice-looking one from further below!
-export PS0='\u@\h %{[%b; %c%u%f] %}\$ '
+export GIT_PROMPT='\u@\h %{[%b; %c%u%f] %}\$ '
 ```
+
+> Legacy versions of this script used `PS0` to store the prompt, but Bash 4.4+ uses `PS0` itself for other purposes. If you're already using `PS0`, and not using Bash 4.4+, this script still supports `PS0`.
 
 This tells `gitprompt.pl` to return (for use in `PS1`) a regular `bash` prompt like `\u@\h $ ` normally, but, when in a Git repo (`%{ ... %}`), to also include the branchname (`%b`) and flags for when files are to be committed (`%c`), updated but not added for commit (`%u`), or untracked (`%f`), all wrapped in `[...]`.  There are many such flags and many ways to combine and configure them in a way that is useful to you and your workflow.  By default, the above flags just return their letter (`c`, `u`, `f`), but this is completely configurable.  For example:
 
@@ -46,7 +48,7 @@ export PROMPT_COMMAND='export PS1=$(gitprompt.pl c=\+ u=\~ f=\* statuscount=1)'
 Now, the above example turns into:
 
 ```
-user@host [master; +1~1*1] $ 
+user@host [master; +1~1*1] $
 ```
 
 Here's a more interesting example which also removes the semicolon when the repo is clean:
@@ -54,14 +56,14 @@ Here's a more interesting example which also removes the semicolon when the repo
 ```
 user@host [master; +1~1*1] $ git reset --hard; rm new-file
 user@host [master; ] $ export PROMPT_COMMAND='export PS1=$(gitprompt.pl c=\+ u=\~ f=\* statuscount=1 keepempty=0)'
-user@host [master; ] $ export PS0='\u@\h %{[%b%}%{; %c%u%f%}%{%g] %}\$ '
+user@host [master; ] $ export GIT_PROMPT='\u@\h %{[%b%}%{; %c%u%f%}%{%g] %}\$ '
 user@host [master] $ touch new-file
-user@host [master; *1] $ 
+user@host [master; *1] $
 ```
 
 ## Template Format Codes
-These can be placed in `PS0` or the option definitions (for options which take
-strings to output).  In `PS0`, bash escapes should be preferred when available.
+These can be placed in `GIT_PROMPT` or the option definitions (for options which take
+strings to output).  In `GIT_PROMPT`, bash escapes should be preferred when available.
 
 ```
 %b - current branch name
@@ -106,25 +108,25 @@ keepempty   - boolean; whether to always keep conditionals which only
 ## Better examples
 A full prompt with symbols for statuses:
 ```
-export PS0='\[\e[0;31m\][\t]\[\e[1m\][\h]\[\e[0;1m\][\w]\[\e[30;1m\]%{[%b\[\e[0m\]%c%u%f%t\[\e[30;1m\]]%}%{[\[\e[0m\]%B%A%F\[\e[30;1m\]]%}\[\e[0m\]\u\$ '
+export GIT_PROMPT='\[\e[0;31m\][\t]\[\e[1m\][\h]\[\e[0;1m\][\w]\[\e[30;1m\]%{[%b\[\e[0m\]%c%u%f%t\[\e[30;1m\]]%}%{[\[\e[0m\]%B%A%F\[\e[30;1m\]]%}\[\e[0m\]\u\$ '
 export PROMPT_COMMAND=$PROMPT_COMMAND';export PS1=$(gitprompt.pl c=\+ u=\~ f=\* A=/ B=\\\\ F=\ \>\> statuscount=1)'
 ```
 
 Change branchname color:
 ```
-export PS0='%{[\[%f%c%u%t\]%b\[\e[0m\]]%}\[\e[0m\]\u\$ '
+export GIT_PROMPT='%{[\[%f%c%u%t\]%b\[\e[0m\]]%}\[\e[0m\]\u\$ '
 export PROMPT_COMMAND=$PROMPT_COMMAND';export PS1=$(gitprompt.pl c=%e[32m u=%e[31m f=%e[35m t=%e[30\;1m)'
 ```
 
 Colored counts instead of flags:
 ```
-export PS0='%{\[\e[0;36m\](\[\e[1;36m\]%b\[\e[0;36m\])[%c%u%f%t\[\e[0;36m\]]%}\[\e[0m\]$ '
+export GIT_PROMPT='%{\[\e[0;36m\](\[\e[1;36m\]%b\[\e[0;36m\])[%c%u%f%t\[\e[0;36m\]]%}\[\e[0m\]$ '
 export PROMPT_COMMAND=$PROMPT_COMMAND';export PS1=$(gitprompt.pl statuscount=1 u=%[%e[31m%] c=%[%e[32m%] f=%[%e[1\;30m%])'
 ```
 
 A simple style that used to be popular at Synacor:
 ```
-export PS0='[\t]\[\e[36m\]%{(%b)\[\e[0;1m\][%c%u%f%t]%}\[\e[0m\]\u\$ '
+export GIT_PROMPT='[\t]\[\e[36m\]%{(%b)\[\e[0;1m\][%c%u%f%t]%}\[\e[0m\]\u\$ '
 export PROMPT_COMMAND=$PROMPT_COMMAND';export PS1=$(gitprompt.pl statuscount=1)'
 ```
 
@@ -137,7 +139,7 @@ export PROMPT_COMMAND='export PS1=$(gitprompt.pl ...)'
 ```
 
 A good rule of thumb is to use real bash escapes (backslash flavor) inside
-the definition for `PS0` (where escaping is normal) and `gitprompt.pl` escapes
+the definition for `GIT_PROMPT` (where escaping is normal) and `gitprompt.pl` escapes
 (percent flavor) inside the arguments to `gitprompt.pl` (where escaping is
 troublesome).
 
